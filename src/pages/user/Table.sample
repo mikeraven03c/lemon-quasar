@@ -1,0 +1,16 @@
+<!--
+<template v-slot:body="props">
+  <q-tr dense :props="props">
+    <q-td auto-width>
+      <q-checkbox dense v-model="props.selected" />
+    </q-td>
+    <template v-for="item in columns" :key="item.field">
+      <q-td :props="props">
+        {{ props.row[item.field] }}
+      </q-td>
+    </template>
+  </q-tr>
+</template>
+ -->
+
+<!-- dense q-pl-md -->
