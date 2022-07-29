@@ -6,3 +6,51 @@
 .title {
   text-transform: capitalize;
 }
+
+.my-background {
+  background: rgba(122, 186, 255, 1);
+  background: -moz-linear-gradient(
+    top,
+    rgba(122, 186, 255, 1) 0%,
+    rgba(130, 178, 227, 1) 26%,
+    rgba(163, 189, 215, 1) 41%,
+    rgba(163, 189, 215, 1) 100%
+  );
+  background: -webkit-gradient(
+    left top,
+    left bottom,
+    color-stop(0%, rgba(122, 186, 255, 1)),
+    color-stop(26%, rgba(130, 178, 227, 1)),
+    color-stop(41%, rgba(163, 189, 215, 1)),
+    color-stop(100%, rgba(163, 189, 215, 1))
+  );
+  background: -webkit-linear-gradient(
+    top,
+    rgba(122, 186, 255, 1) 0%,
+    rgba(130, 178, 227, 1) 26%,
+    rgba(163, 189, 215, 1) 41%,
+    rgba(163, 189, 215, 1) 100%
+  );
+  background: -o-linear-gradient(
+    top,
+    rgba(122, 186, 255, 1) 0%,
+    rgba(130, 178, 227, 1) 26%,
+    rgba(163, 189, 215, 1) 41%,
+    rgba(163, 189, 215, 1) 100%
+  );
+  background: -ms-linear-gradient(
+    top,
+    rgba(122, 186, 255, 1) 0%,
+    rgba(130, 178, 227, 1) 26%,
+    rgba(163, 189, 215, 1) 41%,
+    rgba(163, 189, 215, 1) 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    rgba(122, 186, 255, 1) 0%,
+    rgba(130, 178, 227, 1) 26%,
+    rgba(163, 189, 215, 1) 41%,
+    rgba(163, 189, 215, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7abaff', endColorstr='#a3bdd7', GradientType=0 );
+}
