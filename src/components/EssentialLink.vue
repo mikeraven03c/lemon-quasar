@@ -1,12 +1,13 @@
 <template>
-  <q-item clickable :href="`#/` + link">
+  <!-- <q-item clickable :href="`app/` + link"> -->
+  <q-item v-ripple clickable :to="{ path: ext + link }">
     <!-- <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
     </q-item-section> -->
 
     <q-item-section>
-      <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>{{ caption }}</q-item-label>
+      <q-item-label class="text-body2">{{ title }}</q-item-label>
+      <!-- <q-item-label caption>{{ caption }}</q-item-label> -->
     </q-item-section>
   </q-item>
 </template>
@@ -20,6 +21,10 @@ export default defineComponent({
     title: {
       type: String,
       required: true,
+    },
+    ext: {
+      type: String,
+      default: "/app/",
     },
 
     caption: {

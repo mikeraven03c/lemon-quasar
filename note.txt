@@ -1,1 +1,16 @@
  yarn install --ignore-engines package
+
+class in js
+ https://blog.logrocket.com/the-bleeding-edge-of-javascript-classes/#:~:text=JavaScript%20provides%20us%20with%20a,already%20existing%20prototype%20inheritance%20pattern.&text=As%20shown%20above%2C%20the%20class,JavaScript%20class%20is%20being%20defined.
+
+export in js
+https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export
+
+https://blog.jscrambler.com/enterprise-javascript-opportunities-threats-solutions/
+
+grouping in array
+https://www.npmjs.com/package/group-array
+
+
+flow form
+https://github.com/ditdot-dev/vue-flow-form?ref=madewithvuejs.com

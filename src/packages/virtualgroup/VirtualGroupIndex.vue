@@ -6,7 +6,7 @@
         :title="title"
         :columns="columns"
         :table-data="tableData"
-        :visible-columns="visibleColumns"
+        :visible-columns="[]"
         :loading="loading"
         :dense="false"
       >
@@ -118,7 +118,10 @@ export default {
     };
 
     const onDelete = () => {
-      deleteData(table.value.getSelectedIds(), { tableData, loading });
+      deleteData(endpoint + "/delete", table.value.getSelectedIds(), {
+        tableData,
+        loading,
+      });
     };
 
     onMounted(() => {

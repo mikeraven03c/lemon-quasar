@@ -1,0 +1,64 @@
+
+for custom fields
+ "id": 4023,
+            "key": "784866d4eb6442ddcd803fd910ac42ea4361451c",
+            "name": "single_option",
+            "order_nr": 22,
+            "field_type": "enum",
+            "json_column_flag": true,
+            "add_time": "2022-08-03 19:33:06",
+            "update_time": "2022-08-03 19:33:25",
+            "last_updated_by_user_id": 12649351,
+            "active_flag": true,
+            "edit_flag": true,
+            "index_visible_flag": true,
+            "details_visible_flag": true,
+            "add_visible_flag": true,
+            "important_flag": true,
+            "bulk_edit_allowed": true,
+            "searchable_flag": false,
+            "filtering_allowed": true,
+            "sortable_flag": true,
+            "options": [
+                {
+                    "label": "Option 1",
+                    "id": 18
+                },
+                {
+                    "label": "Option 2",
+                    "id": 19
+                },
+                {
+                    "label": "Option 3",
+                    "id": 20
+                }
+            ],
+            "mandatory_flag": false
+
+
+            import { ref, onMounted, onUnmounted } from "vue";
+
+<FileListRenderless :my-props="$props" v-on="$listeners">
+v-bind="$props"
+
+https://github.com/BrockReece/vue-kanban
+https://github.com/kutlugsahin/vue-smooth-dnd
+
+export function useMousePosition() {
+  const x = ref(0);
+  const y = ref(0);
+
+  function update(e) {
+    x.value = e.pageX;
+    y.value = e.pageY;
+  }
+
+  onMounted(() => {
+    window.addEventListener("mousemove", update);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("mousemove", update);
+  });
+
+  return { x, y };

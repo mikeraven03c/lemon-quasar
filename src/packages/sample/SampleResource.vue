@@ -6,7 +6,7 @@
         :title="title"
         :columns="columns"
         :table-data="tableData"
-        :visible-columns="visibleColumns"
+        :visible-columns="[]"
         :loading="loading"
         :dense="false"
       >

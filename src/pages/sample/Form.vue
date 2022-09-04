@@ -1,17 +1,25 @@
 <template>
-  <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    />
-  </q-page>
+  <LForm title="Sample" :loading="loading" :ref="form">
+    <template v-slot:form></template>
+  </LForm>
 </template>
 
 <script>
+import LForm from "src/lemon/components/formPage/FormComponent.vue";
 import { defineComponent } from "vue";
 
-export default defineComponent({
+export default {
   name: "IndexPage",
-});
+  components: {
+    LForm,
+  },
+  setup() {
+    const form = ref();
+    const loading = ref(false);
+    return {
+      loading,
+      form,
+    };
+  },
+};
 </script>

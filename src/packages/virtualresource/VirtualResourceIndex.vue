@@ -2,13 +2,16 @@
   <q-page>
     <div class="q-pa-md">
       <LTable
+        editable
+        :dense="false"
+        :key="componentKey"
         ref="table"
         :title="title"
+        customize-table
         :columns="columns"
         :table-data="tableData"
-        :visible-columns="visibleColumns"
         :loading="loading"
-        :dense="false"
+        @onPopupSave="onPopupSave"
       >
         <template v-slot:header>
           <l-header-action
@@ -30,7 +33,7 @@
     <LForm
       :title="title"
       @onOpen="
-        ({ selected }) => {
+        (selected) => {
           formData = selected;
         }
       "
@@ -39,25 +42,33 @@
       ref="form"
     >
       <template v-slot:form>
-        <form-builder
+        <form-builder-v2
+          :customOptions="customOptions"
           :data="formData"
           ref="builder"
           :columns="columns"
-        ></form-builder>
+        ></form-builder-v2>
       </template>
     </LForm>
   </q-page>
 </template>
 
 <script>
-import { title, endpoint, columns, visibleColumns } from "./js/config";
+import { useRoute } from "vue-router";
 import { openModal as open } from "src/lemon/actions/formPage/OpenModal.js";
 import { getFormData } from "src/lemon/actions/formPage/GetFormData.js";
 import { saveForm } from "src/lemon/actions/formPage/SaveForm.js";
 import { getData } from "src/lemon/actions/indexPage/GetData";
 import { deleteData } from "src/lemon/actions/indexPage/DeleteData";
 import { updateTableData } from "src/lemon/actions/indexPage/UpdateTableData";
-import { defineAsyncComponent, onMounted, ref } from "vue";
+import {
+  computed,
+  defineAsyncComponent,
+  onMounted,
+  ref,
+  watch,
+  reactive,
+} from "vue";
 export default {
   methods: {},
   components: {
@@ -73,20 +84,48 @@ export default {
     LForm: defineAsyncComponent(() =>
       import("src/lemon/components/formPage/FormComponent.vue")
     ),
-    FormBuilder: defineAsyncComponent(() =>
-      import("src/lemon/components/formPage/FormBuilder.vue")
+    // FormBuilder: defineAsyncComponent(() =>
+    //   import("src/lemon/components/formPage/FormBuilder.vue")
+    // ),
+    FormBuilderV2: defineAsyncComponent(() =>
+      import("src/lemon/components/formPage/FormBuilderV2.vue")
     ),
   },
   setup() {
+    const route = useRoute();
     const loading = ref(false);
+    const resourceName = "Resource: ";
+    const title = ref(resourceName);
     const tableData = ref([]);
     const table = ref();
+    const columns = ref([]);
     const form = ref();
     const builder = ref();
+    const componentKey = ref("");
+    const customOptions = ref({});
 
     const { formData, formError, formMode } = getFormData();
 
+    const getIndexData = () => {
+      let endpoint = route.fullPath.substring(1) + "/index";
+      getData(endpoint, {
+        loading,
+        tableData,
+        afterGet(data) {
+          title.value = resourceName + data.model.name;
+          componentKey.value = data.model.name;
+          columns.value = data.columns;
+          customOptions.value = data.references;
+
+          for (let x = 0; x < data.columns.length; x++) {
+            formData.value[data.columns.field] = "";
+          }
+        },
+      });
+    };
+
     const getTableData = () => {
+      let endpoint = route.fullPath.substring(1) + "/data";
       getData(endpoint, {
         loading,
         tableData,
@@ -102,6 +141,7 @@ export default {
     };
 
     const onSubmit = () => {
+      let endpoint = route.fullPath.substring(1);
       saveForm(endpoint, {
         formMode,
         formData,
@@ -118,15 +158,49 @@ export default {
     };
 
     const onDelete = () => {
-      deleteData(table.value.getSelectedIds(), { tableData, loading });
+      let endpoint = route.fullPath.substring(1);
+      deleteData(endpoint + "/delete", table.value.getSelectedIds(), {
+        tableData,
+        loading,
+      });
+    };
+
+    const onPopupSave = (form, popup) => {
+      formData.value = form.value;
+      formMode.value = "edit";
+      let endpoint = route.fullPath.substring(1);
+      saveForm(endpoint, {
+        formMode,
+        formData,
+        formError,
+        loading,
+        onSave({ mode, data }) {
+          updateTableData(mode, data.data, { tableData });
+          popup.hide();
+        },
+        onFormError(error) {
+          // builder.value.setFormError(error);
+        },
+      });
     };
 
     onMounted(() => {
-      getTableData();
+      getIndexData();
     });
 
+    watch(
+      () => route.params.model,
+      async (newModel) => {
+        if (newModel) {
+          getIndexData();
+        }
+      }
+    );
+
     return {
-      visibleColumns,
+      customOptions,
+      onPopupSave,
+      componentKey,
       title,
       builder,
       onDelete,

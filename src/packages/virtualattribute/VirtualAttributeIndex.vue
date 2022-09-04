@@ -2,6 +2,7 @@
   <q-page>
     <div class="q-pa-md">
       <LTable
+        :custom-pagination="pagination"
         ref="table"
         :title="title"
         :columns="columns"
@@ -16,6 +17,16 @@
             @onAdd="openModal('add')"
             @onGet="getTableData"
             @onDelete="onDelete"
+          >
+            <template v-slot:after>
+              <q-btn
+                outline
+                round
+                color="primary"
+                icon="arrow_back"
+                @click="onBack"
+                size="sm"
+              /> </template
           ></l-header-action>
         </template>
         <template v-slot:table-menu>
@@ -29,11 +40,7 @@
     </div>
     <LForm
       :title="title"
-      @onOpen="
-        ({ selected }) => {
-          formData = selected;
-        }
-      "
+      @onOpen="onOpen"
       @onSubmit="onSubmit"
       :loading="loading"
       ref="form"
@@ -43,21 +50,24 @@
           :data="formData"
           ref="builder"
           :columns="columns"
-        ></form-builder>
+          @onMounted="onFormBuilderMounted"
+        >
+        </form-builder>
       </template>
     </LForm>
   </q-page>
 </template>
 
 <script>
-import { title, endpoint, columns, visibleColumns } from "./js/config";
+import { useRoute, useRouter } from "vue-router";
+import { endpoint, columns, visibleColumns } from "./js/config";
 import { openModal as open } from "src/lemon/actions/formPage/OpenModal.js";
 import { getFormData } from "src/lemon/actions/formPage/GetFormData.js";
 import { saveForm } from "src/lemon/actions/formPage/SaveForm.js";
-import { getData } from "src/lemon/actions/indexPage/GetData";
+import { getPostData } from "src/lemon/actions/indexPage/GetData";
 import { deleteData } from "src/lemon/actions/indexPage/DeleteData";
 import { updateTableData } from "src/lemon/actions/indexPage/UpdateTableData";
-import { defineAsyncComponent, onMounted, ref } from "vue";
+import { defineAsyncComponent, nextTick, onMounted, onUpdated, ref } from "vue";
 export default {
   methods: {},
   components: {
@@ -74,22 +84,51 @@ export default {
       import("src/lemon/components/formPage/FormComponent.vue")
     ),
     FormBuilder: defineAsyncComponent(() =>
-      import("src/lemon/components/formPage/FormBuilder.vue")
+      import("src/lemon/components/formPage/FormBuilderV2.vue")
     ),
   },
   setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const modelId = route.params.id;
     const loading = ref(false);
     const tableData = ref([]);
     const table = ref();
     const form = ref();
+    const title = ref("");
     const builder = ref();
+
+    const pagination = {
+      sortBy: "order",
+      descending: false,
+      page: 1,
+      rowsPerPage: 25,
+      // rowsNumber: xx if getting data from a server
+    };
 
     const { formData, formError, formMode } = getFormData();
 
-    const getTableData = () => {
-      getData(endpoint, {
+    const getIndexData = () => {
+      getPostData(endpoint + "/get-index-data", {
         loading,
         tableData,
+        payload: {
+          id: modelId,
+        },
+        afterGet: (data) => {
+          let name = data.model.name;
+          title.value = "Virtual Attribute for " + name + " model";
+        },
+      });
+    };
+
+    const getTableData = () => {
+      getPostData(endpoint + "/get-table-data", {
+        loading,
+        tableData,
+        payload: {
+          id: modelId,
+        },
       });
     };
 
@@ -102,6 +141,7 @@ export default {
     };
 
     const onSubmit = () => {
+      formData.value.virtual_model_id = modelId;
       saveForm(endpoint, {
         formMode,
         formData,
@@ -118,14 +158,42 @@ export default {
     };
 
     const onDelete = () => {
-      deleteData(table.value.getSelectedIds(), { tableData, loading });
+      deleteData(endpoint + "/delete", table.value.getSelectedIds(), {
+        tableData,
+        loading,
+      });
+    };
+
+    const onBack = () => {
+      router.push({
+        name: "virtual-model-id",
+        params: {
+          id: route.params.id,
+        },
+      });
+    };
+
+    const onOpen = (selected) => {
+      formData.value = selected;
+    };
+
+    const onFormBuilderMounted = () => {
+      let fieldRef = formData.value.field_reference;
+      nextTick(() => {
+        let item = columns.find((e) => e.field == "reference");
+        builder.value.onUpdate(formData.value.reference, item);
+        formData.value.field_reference = fieldRef;
+      });
     };
 
     onMounted(() => {
-      getTableData();
+      getIndexData();
     });
 
     return {
+      onFormBuilderMounted,
+      onOpen,
+      pagination,
       visibleColumns,
       title,
       builder,
@@ -140,6 +208,7 @@ export default {
       openModal,
       tableData,
       loading,
+      onBack,
     };
   },
 };

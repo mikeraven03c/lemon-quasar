@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "A Quasar Project",
   "productName": "MichaelQuasar",
-  "author": "mikeraven03c <mike.raven03c@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "quasar dev",
@@ -26,6 +25,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app-webpack": "^3.0.0",
+    "@vue/devtools": "^6.2.1",
     "dotenv": "^16.0.1",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",

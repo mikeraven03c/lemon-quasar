@@ -6,7 +6,7 @@
         :title="title"
         :columns="columns"
         :table-data="tableData"
-        :visible-columns="visibleColumns"
+        :visible-columns="[]"
         :loading="loading"
         :dense="false"
       >
@@ -23,17 +23,31 @@
             @onShow="openModal('show', table.selected[0])"
             @onEdit="openModal('edit', table.selected[0])"
             @onDelete="onDelete"
-          ></l-table-menu>
+          >
+            <template v-slot:beforeItems>
+              <q-item
+                :to="{
+                  name: 'virtual-attribute',
+                  params: { id: table.selected[0].id },
+                }"
+                clickable
+                v-close-popup
+              >
+                <q-item-section>Attributes</q-item-section>
+              </q-item>
+            </template>
+          </l-table-menu>
         </template>
       </LTable>
     </div>
     <LForm
       :title="title"
       @onOpen="
-        ({ selected }) => {
+        (selected) => {
           formData = selected;
         }
       "
+      @onCloseModal="onCloseModal"
       @onSubmit="onSubmit"
       :loading="loading"
       ref="form"
@@ -58,6 +72,7 @@ import { getData } from "src/lemon/actions/indexPage/GetData";
 import { deleteData } from "src/lemon/actions/indexPage/DeleteData";
 import { updateTableData } from "src/lemon/actions/indexPage/UpdateTableData";
 import { defineAsyncComponent, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 export default {
   methods: {},
   components: {
@@ -80,24 +95,32 @@ export default {
   setup() {
     const loading = ref(false);
     const tableData = ref([]);
+    const router = useRouter();
     const table = ref();
     const form = ref();
     const builder = ref();
+    const route = useRoute();
 
     const { formData, formError, formMode } = getFormData();
-
-    const getTableData = () => {
-      getData(endpoint, {
-        loading,
-        tableData,
-      });
-    };
 
     const openModal = (mode, selected = {}) => {
       open(form, mode, selected, {
         formMode,
         formData,
         formError,
+      });
+    };
+
+    const getTableData = () => {
+      getData(endpoint, {
+        loading,
+        tableData,
+        afterGet() {
+          if (route.params.id) {
+            let data = tableData.value.find((e) => e.id == route.params.id);
+            openModal("edit", data);
+          }
+        },
       });
     };
 
@@ -118,7 +141,16 @@ export default {
     };
 
     const onDelete = () => {
-      deleteData(table.value.getSelectedIds(), { tableData, loading });
+      deleteData(endpoint + "/delete", table.value.getSelectedIds(), {
+        tableData,
+        loading,
+      });
+    };
+
+    const onCloseModal = () => {
+      if (route.params.id) {
+        router.push({ name: "virtual-model" });
+      }
     };
 
     onMounted(() => {
@@ -129,17 +161,18 @@ export default {
       visibleColumns,
       title,
       builder,
-      onDelete,
       formData,
       formError,
-      onSubmit,
-      getTableData,
       table,
       form,
       columns,
-      openModal,
       tableData,
       loading,
+      onDelete,
+      onSubmit,
+      getTableData,
+      openModal,
+      onCloseModal,
     };
   },
 };

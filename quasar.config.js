@@ -14,6 +14,8 @@ const { configure } = require("quasar/wrappers");
 
 module.exports = configure(function (ctx) {
   return {
+    dev: true,
+    prod: false,
     // https://v2.quasar.dev/quasar-cli-webpack/supporting-ts
     supportTS: false,
 
@@ -44,11 +46,11 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-build
     build: {
-      // env: require("dotenv").config().parsed,
-      vueRouterMode: "hash", // available values: 'hash', 'history'
+      env: require("dotenv").config().parsed,
+      vueRouterMode: "history", // available values: 'hash', 'history'
 
       // transpile: false,
-      // publicPath: '/',
+      publicPath: '/',
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).
@@ -79,8 +81,11 @@ module.exports = configure(function (ctx) {
       server: {
         type: "http",
       },
+      vueDevtools: false,
       port: 8080,
-      open: true, // opens browser window automatically
+      open: {
+        app: { name: 'google chrome' }
+      }
     },
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework
@@ -213,7 +218,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: "michael-quasar",
+        appId: "lemon-store",
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

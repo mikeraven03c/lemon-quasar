@@ -89,6 +89,7 @@ export default {
           if (data.status) {
             emit("onSubmitted", mode.value, data.data, index.value);
             isShow.value = false;
+
             formData.value = {};
           }
 
