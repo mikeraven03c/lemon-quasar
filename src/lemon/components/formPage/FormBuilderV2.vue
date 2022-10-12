@@ -47,8 +47,8 @@ export default {
     },
   },
   setup(props, { emit }) {
-    const formData = ref(props.data);
-    // const formData = toRef(props, "data");
+    // const formData = ref(props.data);
+    const formData = toRef(props, "data");
     const formError = ref({});
     const options = ref({});
 

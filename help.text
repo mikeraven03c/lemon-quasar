@@ -38,3 +38,10 @@ https://forum.quasar-framework.org/topic/7249/reusable-qpopupedit/3
 
 Passing Vmodel
 https://stackoverflow.com/questions/70861353/how-to-correctly-pass-a-v-model-down-to-a-quasar-q-input-base-component
+
+Parent and Child Vmodel
+https://softauthor.com/vuejs-compositionapi-input-field-reactivity-between-components/
+
+Query Builder FOr Javascript
+https://github.com/jacwright/array-query
+https://www.npmjs.com/package/array-filter-query-builder

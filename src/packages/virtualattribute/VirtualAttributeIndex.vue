@@ -8,8 +8,11 @@
         :columns="columns"
         :table-data="tableData"
         :visible-columns="visibleColumns"
+        editable
+        customize-table
         :loading="loading"
         :dense="false"
+        @onPopupSave="onPopupSave"
       >
         <template v-slot:header>
           <l-header-action
@@ -38,13 +41,7 @@
         </template>
       </LTable>
     </div>
-    <LForm
-      :title="title"
-      @onOpen="onOpen"
-      @onSubmit="onSubmit"
-      :loading="loading"
-      ref="form"
-    >
+    <LForm :title="title" @onSubmit="onSubmit" :loading="loading" ref="form">
       <template v-slot:form>
         <form-builder
           :data="formData"
@@ -60,7 +57,7 @@
 
 <script>
 import { useRoute, useRouter } from "vue-router";
-import { endpoint, columns, visibleColumns } from "./js/config";
+import { endpoint, columns as col, visibleColumns } from "./js/config";
 import { openModal as open } from "src/lemon/actions/formPage/OpenModal.js";
 import { getFormData } from "src/lemon/actions/formPage/GetFormData.js";
 import { saveForm } from "src/lemon/actions/formPage/SaveForm.js";
@@ -88,6 +85,7 @@ export default {
     ),
   },
   setup() {
+    const columns = ref(col);
     const route = useRoute();
     const router = useRouter();
     const modelId = route.params.id;
@@ -137,6 +135,7 @@ export default {
         formMode,
         formData,
         formError,
+        columns,
       });
     };
 
@@ -173,16 +172,33 @@ export default {
       });
     };
 
-    const onOpen = (selected) => {
-      formData.value = selected;
-    };
-
     const onFormBuilderMounted = () => {
       let fieldRef = formData.value.field_reference;
       nextTick(() => {
-        let item = columns.find((e) => e.field == "reference");
-        builder.value.onUpdate(formData.value.reference, item);
-        formData.value.field_reference = fieldRef;
+        let item = columns.value.find((e) => e.field == "reference");
+        if (formData.value.reference) {
+          builder.value.onUpdate(formData.value.reference, item);
+          formData.value.field_reference = fieldRef;
+        }
+      });
+    };
+
+    const onPopupSave = (form, popup) => {
+      formData.value = form.value;
+      formMode.value = "edit";
+      // let endpoint = route.fullPath.substring(1);
+      saveForm(endpoint, {
+        formMode,
+        formData,
+        formError,
+        loading,
+        onSave({ mode, data }) {
+          updateTableData(mode, data.data, { tableData });
+          popup.hide();
+        },
+        onFormError(error) {
+          // builder.value.setFormError(error);
+        },
       });
     };
 
@@ -191,23 +207,23 @@ export default {
     });
 
     return {
-      onFormBuilderMounted,
-      onOpen,
+      table,
+      form,
+      columns,
+      tableData,
+      loading,
+      formData,
+      formError,
       pagination,
       visibleColumns,
       title,
       builder,
+      onPopupSave,
+      onFormBuilderMounted,
       onDelete,
-      formData,
-      formError,
       onSubmit,
       getTableData,
-      table,
-      form,
-      columns,
       openModal,
-      tableData,
-      loading,
       onBack,
     };
   },

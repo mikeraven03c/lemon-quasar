@@ -72,7 +72,7 @@ export const columns = [
     size: "col-6",
     formRequired: false,
     showOnForm: true,
-    options: "string|number|textarea|select|date|time|currency|reference"
+    options: "string|number|textarea|select|date|time|currency|reference|radio"
   },
   {
     name: "virtual_model_id",
@@ -131,6 +131,7 @@ export const columns = [
     type: "boolean",
     size: "col-3",
     showOnForm: true,
+    default: true,
   },
   {
     name: "is_choices",

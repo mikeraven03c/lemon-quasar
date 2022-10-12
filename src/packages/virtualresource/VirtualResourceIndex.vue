@@ -8,6 +8,7 @@
         ref="table"
         :title="title"
         customize-table
+        :customOptions="customOptions"
         :columns="columns"
         :table-data="tableData"
         :loading="loading"
@@ -30,17 +31,7 @@
         </template>
       </LTable>
     </div>
-    <LForm
-      :title="title"
-      @onOpen="
-        (selected) => {
-          formData = selected;
-        }
-      "
-      @onSubmit="onSubmit"
-      :loading="loading"
-      ref="form"
-    >
+    <LForm :title="title" @onSubmit="onSubmit" :loading="loading" ref="form">
       <template v-slot:form>
         <form-builder-v2
           :customOptions="customOptions"
@@ -137,6 +128,7 @@ export default {
         formMode,
         formData,
         formError,
+        columns,
       });
     };
 

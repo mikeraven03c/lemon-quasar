@@ -126,6 +126,13 @@
       <slot name="after"></slot>
     </template>
   </reference-vue>
+  <radio-vue
+    v-else-if="item.type == 'radio'"
+    :item="item"
+    :columns="columns"
+    :value="value"
+    @update="$emit('input', $event)"
+  ></radio-vue>
 </template>
 
 <script>
@@ -133,6 +140,7 @@ import { ref, watch, toRef } from "vue";
 import HintVue from "./Hint.vue";
 import SelectVue from "./types/select.vue";
 import ReferenceVue from "./types/referenceSSR.vue";
+import RadioVue from "./types/radio.vue";
 const including = [
   "string",
   "integer",
@@ -168,6 +176,7 @@ export default {
     HintVue,
     SelectVue,
     ReferenceVue,
+    RadioVue,
   },
   props: {
     columns: {
@@ -236,6 +245,9 @@ export default {
       getType,
       needAttribute,
       renderIf,
+      testUpdate: (test) => {
+        console.log(test);
+      },
       // formData,
     };
   },

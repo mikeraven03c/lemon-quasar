@@ -81,7 +81,20 @@
             :props="props"
             @click="(e) => showPopup(e, props.row, item)"
           >
-            {{ props.row[item.field] }}
+            <span v-if="item.type == 'reference'">
+              {{ getLabelFromOptions(props.row, item) }}
+            </span>
+            <span v-else-if="item.type == 'currency'">
+              ₱
+              {{
+                props.row[item.field]
+                  ? props.row[item.field].replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  : props.row[item.field]
+              }}
+            </span>
+            <span v-else>
+              {{ props.row[item.field] }}
+            </span>
           </q-td>
           <slot name="table-menu"></slot>
         </q-tr>
@@ -98,6 +111,7 @@
         :key="popupSet.item.field"
         v-model="formData[popupSet.item.field]"
         :item="popupSet.item"
+        :customOptions="customOptions"
         :columns="columns"
       >
         <template v-slot:after> </template>
@@ -123,7 +137,6 @@
 <script>
 import { defineAsyncComponent, nextTick, ref } from "vue";
 import { onPopup } from "src/lemon/actions/indexPage/OpenPopup";
-import { it } from "node:test";
 export default {
   name: "LTable",
   components: {
@@ -164,6 +177,9 @@ export default {
     customizeTable: {
       type: Boolean,
       default: false,
+    },
+    customOptions: {
+      type: Object,
     },
     // For Design
     dense: {
@@ -216,6 +232,14 @@ export default {
       emit("onPopupSave", formData, popup);
     };
 
+    const getLabelFromOptions = (rows, item) => {
+      let data = rows[item.field];
+      let opt = props.customOptions[item.reference];
+      let optData = opt.find((i) => i.value == data);
+
+      return optData ? optData.label : null;
+    };
+
     const showPopup = (evt, row, item) => {
       if (row && props.editable) {
         popupSet.value.item = item;
@@ -235,7 +259,7 @@ export default {
     };
 
     return {
-      // getLabelFromOptions,
+      getLabelFromOptions,
       popupSet,
       showPopup,
       popupRef,

@@ -13,17 +13,18 @@
     v-model="dataValue"
     hide-selected
     fill-input
-    :options="
+    :options="item.hasCustomOption ? customOptions[item.field] : options"
+    :error-message="error"
+    :error="error ? true : false"
+  >
+    <!--
+          :options="
       item.type == 'reference'
         ? customOptions[item.reference]
         : item.hasCustomOption
         ? customOptions[item.field]
         : options
     "
-    :error-message="error"
-    :error="error ? true : false"
-  >
-    <!--
     :value="dataValue"
     @update="input($event)"
     stack-label -->
@@ -39,7 +40,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 
 export default defineComponent({
   methods: {},
@@ -47,8 +48,9 @@ export default defineComponent({
   setup(props, { emit }) {
     const dataValue = ref("");
     const getOptions = (options) => {
-      // customOptions ? customOptions[item.field] : options
-      if (options) {
+      if (props.item.type == "reference") {
+        return props.customOptions[props.item.reference];
+      } else if (options) {
         let items = options.split("|");
 
         for (let x = 0; x < items.length; x++) {
@@ -79,10 +81,17 @@ export default defineComponent({
         }
 
         update(() => {
-          const needle = val.toLowerCase();
-          options.value = stringOptions.filter(
-            (v) => v.toLowerCase().indexOf(needle) > -1
-          );
+          if (props.item.type == "reference") {
+            const needle = val.toLowerCase();
+            options.value = stringOptions.filter(
+              (v) => v.label.toLowerCase().indexOf(needle) > -1
+            );
+          } else {
+            const needle = val.toLowerCase();
+            options.value = stringOptions.filter(
+              (v) => v.toLowerCase().indexOf(needle) > -1
+            );
+          }
         });
       },
     };
